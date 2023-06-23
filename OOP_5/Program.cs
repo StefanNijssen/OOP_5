@@ -131,6 +131,8 @@ public class Trainer
     public string Name;
     public List<Pokeball> Belt;
 
+    private const int MaxPokeballs = 6;
+
     public Trainer(string name)
     {
         Name = name;
@@ -140,23 +142,41 @@ public class Trainer
 
     private void InitializeBeltWithPokemon()
     {
-        for (int i = 0; i < 2; i++)
+        int maxPokemonsPerType = MaxPokeballs / PokemonType.GetValues(typeof(PokemonType)).Length;
+
+        foreach (PokemonType type in PokemonType.GetValues(typeof(PokemonType)))
         {
-            Squirtle squirtle = new Squirtle("Squirtle" + (i + 1));
-            Bulbasaur bulbasaur = new Bulbasaur("Bulbasaur" + (i + 1));
-            Charmander charmander = new Charmander("Charmander" + (i + 1));
+            for (int i = 0; i < maxPokemonsPerType; i++)
+            {
+                string pokemonName = type.ToString() + (i + 1);
+                Pokemon pokemon = CreatePokemonOfType(type, pokemonName);
 
-            Pokeball pokeball1 = new Pokeball();
-            pokeball1.EnclosePokemon(squirtle);
-            Belt.Add(pokeball1);
+                if (Belt.Count < MaxPokeballs)
+                {
+                    Pokeball pokeball = new Pokeball();
+                    pokeball.EnclosePokemon(pokemon);
+                    Belt.Add(pokeball);
+                }
+                else
+                {
+                    throw new Exception("Trainer's belt is full. Cannot add more pokeballs.");
+                }
+            }
+        }
+    }
 
-            Pokeball pokeball2 = new Pokeball();
-            pokeball2.EnclosePokemon(bulbasaur);
-            Belt.Add(pokeball2);
-
-            Pokeball pokeball3 = new Pokeball();
-            pokeball3.EnclosePokemon(charmander);
-            Belt.Add(pokeball3);
+    private Pokemon CreatePokemonOfType(PokemonType type, string name)
+    {
+        switch (type)
+        {
+            case PokemonType.Water:
+                return new Squirtle(name);
+            case PokemonType.Grass:
+                return new Bulbasaur(name);
+            case PokemonType.Fire:
+                return new Charmander(name);
+            default:
+                throw new ArgumentException("Invalid Pokemon type.");
         }
     }
 
