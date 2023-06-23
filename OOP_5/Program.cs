@@ -268,7 +268,7 @@ public class Arena
     private static int battleCounter;
 
     public static void Main(string[] args)
-    {
+    { 
         Console.WriteLine("Naam trainer 1:");
         string nameTrainer1 = Console.ReadLine();
         Trainer trainer1 = new Trainer(nameTrainer1);
