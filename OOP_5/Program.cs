@@ -60,25 +60,25 @@ public class Charmander : Pokemon
     }
 }
 
-public class Pokeball
+public sealed class Pokeball
 {
-    public bool IsOpen;
-    public List<Pokemon> EnclosedPokemons;
+    private bool isOpen;
+    public Pokemon EnclosedPokemons;
 
     public Pokeball()
     {
-        EnclosedPokemons = new List<Pokemon>();
+        EnclosedPokemons = null;
     }
 
     public void Throw()
     {
-        if (!IsOpen && EnclosedPokemons.Count > 0)
+        if (!isOpen && EnclosedPokemons != null)
         {
             Console.WriteLine("Pokeball is thrown!");
-            IsOpen = true;
-            ReleasePokemons();
-            EnclosedPokemons.Clear(); // Clear the enclosed Pokémon after releasing them
-            IsOpen = false; // Set IsOpen back to false after all Pokémon are released
+            isOpen = true;
+            ReleasePokemon();
+            EnclosedPokemons = null;
+            isOpen = false;
         }
         else
         {
@@ -86,26 +86,19 @@ public class Pokeball
         }
     }
 
-    private void ReleasePokemons()
+    private void ReleasePokemon()
     {
-        foreach (Pokemon pokemon in EnclosedPokemons)
-        {
-            Console.WriteLine(pokemon.Name + ", I choose you!");
-            pokemon.BattleCry();
-        }
+        Console.WriteLine(EnclosedPokemons.Name + ", I choose you!");
+        EnclosedPokemons.BattleCry();
     }
 
     public void Return()
     {
-        if (IsOpen && EnclosedPokemons.Count > 0)
+        if (isOpen && EnclosedPokemons != null)
         {
-            foreach (Pokemon pokemon in EnclosedPokemons)
-            {
-                Console.WriteLine(pokemon.Name + ", come back!");
-            }
-
-            EnclosedPokemons.Clear();
-            IsOpen = false;
+            Console.WriteLine(EnclosedPokemons.Name + ", come back!");
+            EnclosedPokemons = null;
+            isOpen = false;
         }
         else
         {
@@ -115,13 +108,13 @@ public class Pokeball
 
     public void EnclosePokemon(Pokemon pokemon)
     {
-        if (!IsOpen)
+        if (!isOpen && EnclosedPokemons == null)
         {
-            EnclosedPokemons.Add(pokemon);
+            EnclosedPokemons = pokemon;
         }
         else
         {
-            Console.WriteLine("Cannot enclose a Pokemon. Pokeball is already open.");
+            Console.WriteLine("Cannot enclose a Pokemon. Pokeball is already open or contains a Pokemon.");
         }
     }
 }
@@ -184,7 +177,7 @@ public class Trainer
     {
         foreach (Pokeball pokeball in Belt)
         {
-            if (pokeball.EnclosedPokemons.Count > 0)
+            if (pokeball.EnclosedPokemons != null)
             {
                 pokeball.Throw();
             }
@@ -227,8 +220,8 @@ public class Battle
             int index1 = random.Next(trainer1.Belt.Count);
             int index2 = random.Next(trainer2.Belt.Count);
 
-            Pokemon pokemon1 = trainer1.Belt[index1].EnclosedPokemons[0];
-            Pokemon pokemon2 = trainer2.Belt[index2].EnclosedPokemons[0];
+            Pokemon pokemon1 = trainer1.Belt[index1].EnclosedPokemons;
+            Pokemon pokemon2 = trainer2.Belt[index2].EnclosedPokemons;
 
             Console.WriteLine(trainer1.Name + " throws a pokeball with " + pokemon1.Name);
             Console.WriteLine(trainer2.Name + " throws a pokeball with " + pokemon2.Name);
